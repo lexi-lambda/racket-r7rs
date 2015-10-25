@@ -81,11 +81,13 @@
   (not (port-closed? port)))
 
 (define/contract (string->vector str [start 0] [end (string-length str)])
-  (->i ([str [end] (and/c string? (λ (v) (or (unsupplied-arg? end)
-                                             ((string-length v) . >= . end))))])
-       ([start exact-nonnegative-integer?]
-        [end [start] (and/c exact-nonnegative-integer? (>=/c start))])
-       [result vector?])
+  ([string?] [exact-integer? exact-integer?] . ->* . vector?)
+  (unless (start . >= . 0)
+    (raise-range-error 'string->vector "string" "starting " start str 0 (string-length str)))
+  (unless (end . >= . start)
+    (raise-range-error 'string->vector "string" "ending " end str start (string-length str) 0))
+  (unless ((string-length str) . >= . end)
+    (raise-range-error 'string->vector "string" "ending " end str 0 (string-length str)))
   (let* ([len (- end start)]
          [vec (make-vector len)])
     (for ([vi (in-range len)]
@@ -94,11 +96,7 @@
     vec))
 
 (define/contract (string-map proc str0 . strs)
-  (->i ([proc [strs] (and/c (procedure-arity-includes/c (add1 (length strs)))
-                            (unconstrained-domain-> char?))]
-        [str0 string?])
-       #:rest [strs (listof string?)]
-       [result string?])
+  ([(unconstrained-domain-> char?) string?] #:rest (listof string?) . ->* . string?)
   (list->string (apply map proc (map string->list (cons str0 strs)))))
 
 (define-syntax syntax-error
@@ -108,11 +106,13 @@
             (syntax->datum #'(args ...)))]))
 
 (define/contract (vector->string vec [start 0] [end (vector-length vec)])
-  (->i ([vec [end] (and/c vector? (λ (v) (or (unsupplied-arg? end)
-                                             ((vector-length v) . >= . end))))])
-       ([start exact-nonnegative-integer?]
-        [end [start] (and/c exact-nonnegative-integer? (>=/c start))])
-       [result string?])
+  ([vector?] [exact-integer? exact-integer?] . ->* . string?)
+  (unless (start . >= . 0)
+    (raise-range-error 'vector->string "vector" "starting " start vec 0 (vector-length vec)))
+  (unless (end . >= . start)
+    (raise-range-error 'vector->string "vector" "ending " end vec start (vector-length vec) 0))
+  (unless ((vector-length vec) . >= . end)
+    (raise-range-error 'vector->string "vector" "ending " end vec 0 (vector-length vec)))
   (let* ([len (- end start)]
          [str (make-string len)])
     (for ([si (in-range len)]
