@@ -1,0 +1,17 @@
+# Racket compiled files
+compiled/
+
+# Scribble documentation files
+doc/
+docs/
+
+# cover-generated code coverage reports
+coverage/
+
+# common backups, autosaves, lock files, OS meta-files
+*~
+\#*
+.#*
+.DS_Store
+*.bak
+TAGS
