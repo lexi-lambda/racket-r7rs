@@ -6,7 +6,8 @@
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in r: (multi-in racket (base include list vector)))
-         (multi-in "private" ("cond-expand.rkt" "exception.rkt" "record.rkt" "strip-prefix.rkt")))
+         (multi-in "private" ("cond-expand.rkt" "exception.rkt" "math.rkt" "record.rkt"
+                              "strip-prefix.rkt")))
 
 (provide
  (strip-colon-prefix-out
@@ -44,15 +45,6 @@
              [exn:fail:read? read-error?]
              [string->bytes/utf-8 string->utf8]
              [bytes->string/utf-8 utf8->string]))
-
-(define-syntax-rule (floor-quotient . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (floor-remainder . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (floor/ . _)
-  (syntax-error "FIXME: not yet implemented"))
 
 (define-syntax-rule (get-output-bytevector . _)
   (syntax-error "FIXME: not yet implemented"))
@@ -121,15 +113,6 @@
     [(_ message:str args ...)
      (apply error (syntax->datum #'message)
             (syntax->datum #'(args ...)))]))
-
-(define-syntax-rule (truncate-quotient . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (truncate-remainder . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (truncate/ . _)
-  (syntax-error "FIXME: not yet implemented"))
 
 (define-syntax-rule (u8-ready? . _)
   (syntax-error "FIXME: not yet implemented"))
