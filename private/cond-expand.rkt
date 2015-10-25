@@ -16,7 +16,7 @@
 
 (begin-for-syntax
   (define (module-exists? path)
-    (with-handlers ([exn:fail:filesystem:missing-module? (const #f)])
+    (with-handlers ([exn:missing-module? (const #f)])
       (dynamic-require path #f)
       #t))
 
