@@ -73,7 +73,7 @@
   (6:map values lst))
 
 (define/contract (list-set! lst n v)
-  (6:list? . -> . void?)
+  (6:list? exact-nonnegative-integer? any/c . -> . void?)
   (let loop ([lst lst]
              [n n])
     (if (zero? n)
