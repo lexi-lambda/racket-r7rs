@@ -64,20 +64,24 @@
      (begin (r:include str)
             (include . strs))]))
 
-(define (input-port-open? port)
+(define/contract (input-port-open? port)
+  (input-port? . -> . boolean?)
   (not (port-closed? port)))
 
-(define (list-copy lst)
+(define/contract (list-copy lst)
+  (6:list? . -> . 6:list?)
   (6:map values lst))
 
-(define (list-set! lst n v)
+(define/contract (list-set! lst n v)
+  (6:list? . -> . void?)
   (let loop ([lst lst]
              [n n])
     (if (zero? n)
         (5:set-car! lst v)
         (loop (5:cdr lst) (sub1 n)))))
 
-(define (output-port-open? port)
+(define/contract (output-port-open? port)
+  (output-port? . -> . boolean?)
   (not (port-closed? port)))
 
 (define/contract (string->vector str [start 0] [end (string-length str)])
