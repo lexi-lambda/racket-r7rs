@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/require
+(require racket/contract
+         racket/require
          (for-syntax racket/base
                      syntax/parse)
          (prefix-in 5: r5rs)
@@ -79,11 +80,26 @@
 (define (output-port-open? port)
   (not (port-closed? port)))
 
-(define-syntax-rule (string->vector . _)
-  (syntax-error "FIXME: not yet implemented"))
+(define/contract (string->vector str [start 0] [end (string-length str)])
+  (->i ([str [end] (and/c string? (λ (v) (or (unsupplied-arg? end)
+                                             ((string-length v) . >= . end))))])
+       ([start exact-nonnegative-integer?]
+        [end [start] (and/c exact-nonnegative-integer? (>=/c start))])
+       [result vector?])
+  (let* ([len (- end start)]
+         [vec (make-vector len)])
+    (for ([vi (in-range len)]
+          [si (in-range start end)])
+      (vector-set! vec vi (string-ref str si)))
+    vec))
 
-(define-syntax-rule (string-map . _)
-  (syntax-error "FIXME: not yet implemented"))
+(define/contract (string-map proc str0 . strs)
+  (->i ([proc [strs] (and/c (procedure-arity-includes/c (add1 (length strs)))
+                            (unconstrained-domain-> char?))]
+        [str0 string?])
+       #:rest [strs (listof string?)]
+       [result string?])
+  (list->string (apply map proc (map string->list (cons str0 strs)))))
 
 (define-syntax syntax-error
   (syntax-parser
@@ -91,5 +107,18 @@
      (apply error (syntax->datum #'message)
             (syntax->datum #'(args ...)))]))
 
-(define-syntax-rule (vector->string . _)
-  (syntax-error "FIXME: not yet implemented"))
+(define/contract (vector->string vec [start 0] [end (vector-length vec)])
+  (->i ([vec [end] (and/c vector? (λ (v) (or (unsupplied-arg? end)
+                                             ((vector-length v) . >= . end))))])
+       ([start exact-nonnegative-integer?]
+        [end [start] (and/c exact-nonnegative-integer? (>=/c start))])
+       [result string?])
+  (let* ([len (- end start)]
+         [str (make-string len)])
+    (for ([si (in-range len)]
+          [vi (in-range start end)])
+      (let ([c (vector-ref vec vi)])
+        (unless (char? c)
+          (raise-argument-error 'vector->string "char?" c))
+        (string-set! str si c)))
+    str))

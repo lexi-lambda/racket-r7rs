@@ -14,7 +14,7 @@ This is an **incomplete, work-in-progress** implementation of [R7RS "small"][r7r
 
 The following parts of R7RS are currently supported:
 
-  - *Most* of `(scheme base)` is supported. Some functions are unimplemented.
+  - *All* of `(scheme base)` is supported.
   - *All* of `(scheme case-lambda)` is supported.
   - *All* of `(scheme char)` is supported.
 
