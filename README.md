@@ -2,6 +2,10 @@
 
 This is an **incomplete, work-in-progress** implementation of [R7RS "small"][r7rs] in [Racket][racket]. To use it, install the package and use `#lang r7rs` in your programs.
 
+```sh
+$ raco pkg install r7rs
+```
+
 ```scheme
 #lang r7rs
 
