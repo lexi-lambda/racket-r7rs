@@ -108,15 +108,25 @@
   (require racket/block
            racket/function
            rackunit
-           syntax/macro-testing)
+           "cond-expand.rkt")
 
-  (test-case
-   "constructor field validation"
+  (block (define-record-type foo [make-foo a b] foo?
+           [a get-a] [b get-b set-b!])
+         
+         (check-equal? (get-a (make-foo 1 2)) 1)
+         (check-equal? (get-b (make-foo 1 2)) 2)
 
-   (check-not-exn
-    (thunk (convert-syntax-error (block (define-record-type foo [make-foo a b] foo?
-                                          [a get-a] [b get-b set-b])))))
-   (check-exn
-    #rx"^define-record-type: ‘b’ is not a field of record type ‘foo’$"
-    (thunk (convert-syntax-error (block (define-record-type foo [make-foo a b] foo?
-                                          [a get-a])))))))
+         (let ([foo (make-foo 1 2)])
+           (set-b! foo 3)
+           (check-equal? (get-b foo) 3)))
+
+  ; the syntax/macro-testing module is unavailable before 6.3, so we just shouldn't run that test
+  (cond-expand
+   [(library (syntax macro-testing))
+    (require syntax/macro-testing)
+    (test-case
+     "constructor field validation"
+     (check-exn
+      #rx"^define-record-type: ‘b’ is not a field of record type ‘foo’$"
+      (thunk (convert-syntax-error (block (define-record-type foo [make-foo a b] foo?
+                                            [a get-a]))))))]))

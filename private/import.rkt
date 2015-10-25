@@ -5,7 +5,8 @@
                      racket/string
                      syntax/parse))
 
-(provide import only except rename prefix)
+(provide (for-syntax join-library-name-elements library-name-element)
+         import only except rename prefix)
 
 (define-syntax (only stx)
   (raise-syntax-error 'only "import transformer not allowed as an expression"))
