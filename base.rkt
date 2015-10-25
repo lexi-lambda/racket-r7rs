@@ -5,7 +5,7 @@
                      syntax/parse)
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
-         (prefix-in r: (multi-in racket (base include list vector)))
+         (prefix-in r: (multi-in racket (base include list math vector)))
          (multi-in "private" ("cond-expand.rkt" "exception.rkt" "math.rkt" "record.rkt"
                               "strip-prefix.rkt")))
 
@@ -31,7 +31,7 @@
   6:numerator 6:odd? r:open-input-string r:open-output-string 6:or output-port-open? 6:pair?
   r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient 6:raise
   6:raise-continuable 6:rational? 6:rationalize 5:read-char
-  r:read-line r:read-string 6:real? 5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! square
+  r:read-line r:read-string 6:real? 5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr!
   6:string 6:string->list 6:string->number 6:string->symbol string->vector 6:string-append
   6:string-copy r:string-copy! 5:string-fill! 6:string-for-each 6:string-length string-map
   6:string-ref 5:string-set! 6:string<=? 6:string<? 6:string=? 6:string>=? 6:string>? 6:string?
@@ -40,20 +40,21 @@
   6:vector 6:vector->list vector->string r:vector-append r:vector-copy r:vector-copy! 6:vector-fill!
   6:vector-for-each 6:vector-length 6:vector-map 6:vector-ref 6:vector-set! 6:vector 6:when
   6:with-exception-handler 5:write-char r:write-string 6:zero?)
- (rename-out [get-output-bytes get-output-bytevector]
-             [exn:fail:filesystem? file-error?]
-             [exn:fail:read? read-error?]
-             [open-input-bytes open-input-bytevector]
-             [open-output-bytes open-output-bytevector]
-             [peek-byte peek-u8]
-             [read-bytes read-bytevector]
-             [read-bytes! read-bytevector!]
-             [read-byte read-u8]
-             [string->bytes/utf-8 string->utf8]
-             [byte-ready? u8-ready?]
-             [bytes->string/utf-8 utf8->string]
-             [write-bytes write-bytevector]
-             [write-byte write-u8]))
+ (rename-out [r:get-output-bytes get-output-bytevector]
+             [r:exn:fail:filesystem? file-error?]
+             [r:exn:fail:read? read-error?]
+             [r:open-input-bytes open-input-bytevector]
+             [r:open-output-bytes open-output-bytevector]
+             [r:peek-byte peek-u8]
+             [r:read-bytes read-bytevector]
+             [r:read-bytes! read-bytevector!]
+             [r:read-byte read-u8]
+             [r:sqr square]
+             [r:string->bytes/utf-8 string->utf8]
+             [r:byte-ready? u8-ready?]
+             [r:bytes->string/utf-8 utf8->string]
+             [r:write-bytes write-bytevector]
+             [r:write-byte write-u8]))
 
 (define-syntax include
   (syntax-rules ()
@@ -77,9 +78,6 @@
 
 (define (output-port-open? port)
   (not (port-closed? port)))
-
-(define-syntax-rule (square . _)
-  (syntax-error "FIXME: not yet implemented"))
 
 (define-syntax-rule (string->vector . _)
   (syntax-error "FIXME: not yet implemented"))
