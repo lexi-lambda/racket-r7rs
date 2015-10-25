@@ -6,7 +6,7 @@
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in r: (multi-in racket (base include list vector)))
-         (multi-in "private" ("cond-expand.rkt" "record.rkt" "strip-prefix.rkt")))
+         (multi-in "private" ("cond-expand.rkt" "exception.rkt" "record.rkt" "strip-prefix.rkt")))
 
 (provide
  (strip-colon-prefix-out
@@ -42,18 +42,6 @@
   6:with-exception-handler write-bytevector 5:write-char write-string write-u8 6:zero?)
  (rename-out [string->bytes/utf-8 string->utf8]
              [bytes->string/utf-8 utf8->string]))
-
-(define (error message . irritants)
-  (apply 6:error #f message irritants))
-
-(define-syntax-rule (error-object-irritants . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (error-object-message . _)
-  (syntax-error "FIXME: not yet implemented"))
-
-(define-syntax-rule (error-object? . _)
-  (syntax-error "FIXME: not yet implemented"))
 
 (define-syntax-rule (file-error? . _)
   (syntax-error "FIXME: not yet implemented"))
