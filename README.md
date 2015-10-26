@@ -29,6 +29,7 @@ The following parts of R7RS are currently supported:
     - `(scheme lazy)`
     - `(scheme load)`
     - `(scheme repl)`
+    - `(scheme time)`
   - The following libraries are supported *with caveats*:
     - `(scheme base)` — Mostly implemented, but some of the more complicated forms like `include-ci` aren't in yet.
     - `(scheme process-context)` — All bindings are available, but `exit` and `emergency-exit` are the same, and `exit` does not properly call outgoing `dynamic-wind` thunks.
