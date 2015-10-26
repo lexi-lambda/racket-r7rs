@@ -19,6 +19,7 @@ $ raco pkg install r7rs
 The following parts of R7RS are currently supported:
 
   - *Most* of `(scheme base)` is supported. Some of the more complicated forms like `include-ci` aren't in yet.
+  - *Most* of `(scheme process-context)` is supported. All bindings are available, but `exit` and `emergency-exit` are the same, and `exit` does not properly call outgoing `dynamic-wind` thunks.
   - *All* of the following libraries are supported:
     - `(scheme case-lambda)`
     - `(scheme char)`
