@@ -21,6 +21,7 @@ The following parts of R7RS are currently supported:
   - *Most* of `(scheme base)` is supported. Some of the more complicated forms like `include-ci` aren't in yet.
   - *All* of `(scheme case-lambda)` is supported.
   - *All* of `(scheme char)` is supported.
+  - *All* of `(scheme complex)` is supported.
 
 No other libraries are supported at this time. Furthermore, creating R7RS libraries via the `define-library` form is *not* supported, though similar nonstandard functionality is possible since `import` cooperates with the Racket module system. Finally, the current implementation uses the regular R5RS reader, so all R7RS incompatibilities with the R5RS reader are not yet supported.
 
