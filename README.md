@@ -9,7 +9,8 @@ $ raco pkg install r7rs
 ```scheme
 #lang r7rs
 
-(import (scheme base))
+(import (scheme base)
+        (scheme write))
 
 (display (string-append "Hello, " "world!"))
 ```
@@ -34,6 +35,7 @@ The following parts of R7RS are currently supported:
     - `(scheme base)` — Mostly implemented, but some of the more complicated forms like `include-ci` aren't in yet.
     - `(scheme process-context)` — All bindings are available, but `exit` and `emergency-exit` are the same, and `exit` does not properly call outgoing `dynamic-wind` thunks.
     - `(scheme read)` — Implemented, but uses the R5RS reader as described below.
+    - `(scheme write)` — Uses the R5RS printer as described below. Also, `write-shared` and `write-simple` both operate in the same way as `write`.
 
 No other libraries are supported at this time. Furthermore, creating R7RS libraries via the `define-library` form is *not* supported, though similar nonstandard functionality is possible since `import` cooperates with the Racket module system. Finally, the current implementation uses the regular R5RS reader, so all R7RS incompatibilities with the R5RS reader are not yet supported.
 
