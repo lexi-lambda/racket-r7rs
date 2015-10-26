@@ -35,8 +35,8 @@
       (if next-eof
           (bytevector-eof-error next src in)
           (bytevector-error (list->string (list #\8 next)) src in))))
-  (with-syntax ([(vals ...) (read-syntax src in)])
-    (syntax (bytevector vals ...))))
+  (with-syntax ([vals (read-syntax src in)])
+    (datum->syntax #f (list* 'bytevector (syntax->datum #'vals)) #'vals)))
 
 ;; Dispatch function for readtable when `#u' is
 ;; encountered
