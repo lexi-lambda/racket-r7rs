@@ -8,3 +8,4 @@
                (t)))
 
 (require "r7rs-reader.rkt")
+(current-read-interaction r7rs-read-interaction)

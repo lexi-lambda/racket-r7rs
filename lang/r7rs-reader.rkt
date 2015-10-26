@@ -1,7 +1,8 @@
 #lang racket/base
 (require syntax/readerr
          (only-in "../base.rkt" bytevector))
-(provide make-r7rs-readtable)
+(provide make-r7rs-readtable
+         r7rs-read-interaction)
 
 ;; Error functions:
 (define (bytevector-error next-char src in)
@@ -59,3 +60,12 @@
 (define (make-r7rs-readtable)
   (make-readtable (current-readtable)
                   #\u 'dispatch-macro readtable-bytevector))
+
+(define (r7rs-read-interaction src in)
+  (parameterize ([read-accept-reader #t]
+                 [read-accept-lang #f]
+                 [current-readtable (make-r7rs-readtable)]
+                 [read-accept-infix-dot #f]
+                 [read-curly-brace-as-paren #f]
+                 [read-square-bracket-as-paren #f])
+    (read-syntax src in)))
