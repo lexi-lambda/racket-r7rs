@@ -18,7 +18,7 @@ $ raco pkg install r7rs
 
 The following parts of R7RS are currently supported:
 
-  - *All* of `(scheme base)` is supported.
+  - *Most* of `(scheme base)` is supported. Some of the more complicated forms like `include-ci` aren't in yet.
   - *All* of `(scheme case-lambda)` is supported.
   - *All* of `(scheme char)` is supported.
 
