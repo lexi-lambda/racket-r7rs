@@ -41,7 +41,8 @@
   r:vector-copy r:vector-copy! 6:vector-fill! 6:vector-for-each 6:vector-length 6:vector-map
   6:vector-ref 6:vector-set! 6:vector? 6:when 6:with-exception-handler 5:write-char r:write-string
   6:zero?)
- (rename-out [r:get-output-bytes get-output-bytevector]
+ (rename-out [r:bytes bytevector]
+             [r:get-output-bytes get-output-bytevector]
              [r:exn:fail:filesystem? file-error?]
              [r:exn:fail:read? read-error?]
              [r:open-input-bytes open-input-bytevector]
