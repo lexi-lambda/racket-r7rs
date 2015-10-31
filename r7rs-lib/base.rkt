@@ -4,7 +4,7 @@
          racket/require
          (for-syntax (for-syntax racket/base
                                  syntax/parse)
-                     racket/base
+                     (except-in racket/base syntax-rules)
                      racket/syntax
                      syntax/parse)
          (prefix-in 5: r5rs)
