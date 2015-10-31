@@ -2,25 +2,28 @@
 
 (require racket/contract
          racket/require
-         (for-syntax racket/base
+         (for-syntax (for-syntax racket/base
+                                 syntax/parse)
+                     racket/base
+                     racket/syntax
                      syntax/parse)
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in r: (multi-in racket (base include list math vector)))
-         (multi-in "private" ("cond-expand.rkt" "exception.rkt" "math.rkt" "record.rkt"
-                              "strip-prefix.rkt")))
+         (multi-in "private" ("case.rkt" "cond-expand.rkt" "define-values.rkt" "exception.rkt"
+                              "math.rkt" "record.rkt" "strip-prefix.rkt")))
 
 (provide
  (strip-colon-prefix-out
-  (for-syntax 6:_ 6:... 6:syntax-rules)
+  (for-syntax 6:_ 6:... syntax-rules)
   6:* 6:+ 6:- 6:/ 6:< 6:<= 6:= 6:=> 6:> 6:>= 6:abs 6:and 6:append 6:apply 5:assoc 5:assq 5:assv
   6:begin 6:binary-port? 6:boolean=? 6:boolean? r:bytes r:bytes-append 6:bytevector-copy
   6:bytevector-copy! 6:bytevector-length 6:bytevector-u8-ref 6:bytevector-u8-set! 6:bytevector? 6:caar
-  6:cadr 6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car 6:case
+  6:cadr 6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car case
   6:cdar 6:cddr 6:cdr 6:ceiling 6:char->integer 5:char-ready? 6:char<=? 6:char<? 6:char=? 6:char>=?
   6:char>? 6:char? 5:close-input-port 5:close-output-port 6:close-port 6:complex? 6:cond cond-expand
   6:cons 6:current-error-port 6:current-input-port 6:current-output-port 6:define define-record-type
-  6:define-syntax r:define-values 6:denominator 6:do 6:dynamic-wind 6:else 6:eof-object 6:eof-object?
+  6:define-syntax define-values 6:denominator 6:do 6:dynamic-wind 6:else 6:eof-object 6:eof-object?
   6:eq? 6:equal? 6:eqv? error error-object-irritants error-object-message error-object? 6:even?
   6:exact 6:exact-integer-sqrt r:exact-integer? 6:exact? 6:expt features 6:floor floor-quotient
   floor-remainder floor/ 6:flush-output-port 6:for-each 6:gcd r:get-output-string 6:guard 6:if include
@@ -41,7 +44,8 @@
   r:vector-copy r:vector-copy! 6:vector-fill! 6:vector-for-each 6:vector-length 6:vector-map
   6:vector-ref 6:vector-set! 6:vector? 6:when 6:with-exception-handler 5:write-char r:write-string
   6:zero?)
- (rename-out [r:get-output-bytes get-output-bytevector]
+ (rename-out [r:bytes bytevector]
+             [r:get-output-bytes get-output-bytevector]
              [r:exn:fail:filesystem? file-error?]
              [r:exn:fail:read? read-error?]
              [r:open-input-bytes open-input-bytevector]
@@ -57,12 +61,14 @@
              [r:write-bytes write-bytevector]
              [r:write-byte write-u8]))
 
-(define-syntax include
-  (syntax-rules ()
-    [(_ str) (r:include str)]
-    [(_ str . strs)
-     (begin (r:include str)
-            (include . strs))]))
+(define-syntax (include stx)
+  (syntax-parse stx
+    [(_ str ...+)
+     ; make sure each include form has the right lexical context
+     (define/with-syntax (inc ...)
+       (for/list ([path (in-list (attribute str))])
+         (datum->syntax stx `(,#'r:include ,path) path)))
+     #'(begin inc ...)]))
 
 (define/contract (input-port-open? port)
   (input-port? . -> . boolean?)
@@ -108,6 +114,17 @@
     [(_ message:str args ...)
      (apply error (syntax->datum #'message)
             (syntax->datum #'(args ...)))]))
+
+(begin-for-syntax
+  (define-syntax syntax-rules
+    (syntax-parser
+      [(_ dots:id (literal:id ...) clause ...)
+       #'(let-syntax ([dots (make-rename-transformer #'((... ...) (... ...)))])
+           (5:syntax-rules (literal ...)
+                           clause ...))]
+      [(_ (literal:id ...) clause ...)
+       #'(5:syntax-rules (literal ...)
+                         clause ...)])))
 
 (define/contract (vector->string vec [start 0] [end (vector-length vec)])
   ([vector?] [exact-integer? exact-integer?] . ->* . string?)

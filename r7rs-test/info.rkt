@@ -3,7 +3,6 @@
 (define collection 'multi)
 
 (define deps
-  '("base"
-    "r7rs-lib"))
-(define implies
+  '("base"))
+(define build-deps
   '("r7rs-lib"))
