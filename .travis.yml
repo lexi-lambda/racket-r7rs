@@ -25,4 +25,4 @@ install:
 
 script:
   - raco test -p r7rs-lib
-  - raco test -l tests/r7rs/chibi/tests/r7rs-tests
+  - raco test $TRAVIS_BUILD_DIR/r7rs-test/tests/r7rs/chibi/tests/r7rs-tests.rkt
