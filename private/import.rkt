@@ -5,7 +5,7 @@
                      racket/string
                      syntax/parse))
 
-(provide (for-syntax join-library-name-elements library-name-element)
+(provide (for-syntax library-name)
          import only except rename prefix)
 
 (define-syntax (only stx)
@@ -27,10 +27,19 @@
     #:attributes []
     (pattern :id)
     (pattern :integer))
+
+  (define-syntax-class library-name
+    #:attributes [module-path]
+    #:datum-literals [scheme]
+    (pattern (~and stx (scheme element:library-name-element ...))
+             #:with module-path
+             (join-library-name-elements (cons #'r7rs (attribute element)) #'stx))
+    (pattern (~and stx (element:library-name-element ...))
+             #:with module-path
+             (join-library-name-elements (attribute element) #'stx)))
   
   (define-syntax-class import-spec
     #:literals [only except rename prefix]
-    #:datum-literals [scheme]
     #:attributes [require-spec]
     (pattern (only spec:import-spec id:id ...)
              #:with require-spec
@@ -44,12 +53,9 @@
     (pattern (prefix prefix-id:id spec:import-spec)
              #:with require-spec
              #'(prefix-in prefix-id spec.require-spec))
-    (pattern (~and stx (scheme element:library-name-element ...))
+    (pattern name:library-name
              #:with require-spec
-             (join-library-name-elements (cons #'r7rs (attribute element)) #'stx))
-    (pattern (~and stx (element:library-name-element ...))
-             #:with require-spec
-             (join-library-name-elements (attribute element) #'stx))))
+             #'name.module-path)))
 
 (define-syntax (import stx)
   (syntax-parse stx

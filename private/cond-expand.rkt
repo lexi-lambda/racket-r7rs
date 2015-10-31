@@ -30,9 +30,8 @@
              #:attr true? (ormap values (attribute req.true?)))
     (pattern (6:not req:ce-requirement)
              #:attr true? (not (attribute req.true?)))
-    (pattern (library (~and name (name-el:library-name-element ...)))
-             #:attr true? (let ([lib-name (join-library-name-elements (attribute name-el) #'name)])
-                            (module-exists? (syntax->datum lib-name))))
+    (pattern (library name:library-name)
+             #:attr true? (module-exists? (syntax->datum #'name.module-path)))
     (pattern 6:else #:attr true? #t)
     (pattern _:id #:attr true? #f)))
 
