@@ -6,7 +6,8 @@
                                  syntax/parse)
                      (except-in racket/base syntax-rules)
                      racket/syntax
-                     syntax/parse)
+                     syntax/parse
+                     (prefix-in reader: "lang/reader.rkt"))
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in r: (multi-in racket (base include list math vector)))
@@ -62,13 +63,17 @@
              [r:write-bytes write-bytevector]
              [r:write-byte write-u8]))
 
+(define-for-syntax (read-r7rs-syntax src in)
+  (reader:r7rs-parameterize-read
+   (λ () (read-syntax src in))))
+
 (define-syntax (include stx)
   (syntax-parse stx
     [(_ str ...+)
      ; make sure each include form has the right lexical context
      (define/with-syntax (inc ...)
        (for/list ([path (in-list (attribute str))])
-         (datum->syntax stx `(,#'r:include ,path) path)))
+         (datum->syntax stx `(,#'r:include/reader ,path ,#'read-r7rs-syntax) path)))
      #'(begin inc ...)]))
 
 (define/contract (input-port-open? port)
