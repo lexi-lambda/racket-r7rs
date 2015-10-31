@@ -20,7 +20,7 @@ before_install:
   - export PATH="${RACKET_DIR}/bin:${PATH}"
 
 install:
-  - raco pkg install -in r7rs --deps search-auto --link $TRAVIS_BUILD_DIR
+  - raco pkg install -in r7rs-lib --deps search-auto --link $TRAVIS_BUILD_DIR/r7rs-lib
 
 script:
-  - raco test -p r7rs
+  - raco test -p r7rs-lib
