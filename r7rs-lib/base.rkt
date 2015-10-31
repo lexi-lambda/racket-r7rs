@@ -26,15 +26,15 @@
   6:define-syntax define-values 6:denominator 6:do 6:dynamic-wind 6:else 6:eof-object 6:eof-object?
   6:eq? 6:equal? 6:eqv? error error-object-irritants error-object-message error-object? 6:even?
   6:exact 6:exact-integer-sqrt r:exact-integer? 6:exact? 6:expt features 6:floor floor-quotient
-  floor-remainder floor/ 6:flush-output-port 6:for-each 6:gcd r:get-output-string 6:guard 6:if include
-  6:inexact 6:inexact? input-port-open? 6:input-port? 6:integer->char 6:integer? 6:lambda 6:lcm
-  6:length 6:let 6:let* 6:let*-values 6:let-syntax 6:let-values 6:letrec 6:letrec* 6:letrec-syntax
-  6:list 6:list->string 6:list->vector list-copy 6:list-ref list-set! 6:list-tail 6:list?
-  6:make-bytevector r:make-list r:make-parameter 6:make-string 6:make-vector 6:map 6:max 5:member
-  5:memq 5:memv 5:min 5:modulo 6:negative? 5:newline 6:not 6:null? 6:number->string 6:number?
-  6:numerator 6:odd? r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open?
-  6:pair? r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient
-  6:raise 6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
+  floor-remainder floor/ 6:for-each 6:gcd r:get-output-string 6:guard 6:if include 6:inexact
+  6:inexact? input-port-open? 6:input-port? 6:integer->char 6:integer? 6:lambda 6:lcm 6:length 6:let
+  6:let* 6:let*-values 6:let-syntax 6:let-values 6:letrec 6:letrec* 6:letrec-syntax 6:list
+  6:list->string 6:list->vector list-copy 6:list-ref list-set! 6:list-tail 6:list? 6:make-bytevector
+  r:make-list r:make-parameter 6:make-string 6:make-vector 6:map 6:max 5:member 5:memq 5:memv 5:min
+  5:modulo 6:negative? 5:newline 6:not 6:null? 6:number->string 6:number? 6:numerator 6:odd?
+  r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open? 6:pair?
+  r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient 6:raise
+  6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
   5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 6:string->list 6:string->number
   6:string->symbol string->vector 6:string-append 6:string-copy r:string-copy! 5:string-fill!
   6:string-for-each 6:string-length string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
@@ -47,6 +47,7 @@
  (rename-out [r:bytes bytevector]
              [r:get-output-bytes get-output-bytevector]
              [r:exn:fail:filesystem? file-error?]
+             [r:flush-output flush-output-port]
              [r:exn:fail:read? read-error?]
              [r:open-input-bytes open-input-bytevector]
              [r:open-output-bytes open-output-bytevector]
