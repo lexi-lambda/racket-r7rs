@@ -38,8 +38,8 @@
   r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open? 6:pair?
   r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient 6:raise
   6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
-  5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 6:string->list 6:string->number
-  6:string->symbol string->vector 6:string-append string-copy r:string-copy! 5:string-fill!
+  5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string string->list 6:string->number
+  6:string->symbol string->vector 6:string-append string-copy r:string-copy! string-fill!
   6:string-for-each 6:string-length string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
   6:string=? 6:string>=? 6:string>? 6:string? 6:substring 6:symbol->string 6:symbol=? 6:symbol?
   syntax-error 6:textual-port? 6:truncate truncate-quotient truncate-remainder truncate/ 6:unless
@@ -113,6 +113,15 @@
   (output-port? . -> . boolean?)
   (not (port-closed? port)))
 
+(define/contract string->list
+  (case-> (string? . -> . (mlistof char?))
+          (string? exact-nonnegative-integer? . -> . (mlistof char?))
+          (string? exact-nonnegative-integer? exact-nonnegative-integer? . -> . (mlistof char?)))
+  (case-lambda
+    [(s)      (6:string->list s)]
+    [(s st)   (6:string->list (r:substring s st))]
+    [(s st e) (6:string->list (r:substring s st e))]))
+
 (define/contract (string->vector str [start 0] [end (string-length str)])
   ([string?] [exact-integer? exact-integer?] . ->* . vector?)
   (unless (start . >= . 0)
@@ -136,6 +145,17 @@
     [(s)      (r:string-copy s)]
     [(s st)   (r:substring s st)]
     [(s st e) (r:substring s st e)]))
+
+(define/contract (string-fill! str c [start 0] [end (string-length str)])
+  ([string? char?] [exact-nonnegative-integer? exact-nonnegative-integer?] . ->* . void?)
+  (unless (start . >= . 0)
+    (raise-range-error 'string-fill! "string" "starting " start str 0 (string-length str)))
+  (unless (end . >= . start)
+    (raise-range-error 'string-fill! "string" "ending " end str start (string-length str) 0))
+  (unless ((string-length str) . >= . end)
+    (raise-range-error 'string-fill! "string" "ending " end str 0 (string-length str)))
+  (for ([i (in-range start end)])
+    (string-set! str i c)))
 
 (define/contract (string-map proc str0 . strs)
   ([(unconstrained-domain-> char?) string?] #:rest (listof string?) . ->* . string?)
