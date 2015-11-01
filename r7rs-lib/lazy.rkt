@@ -1,12 +1,30 @@
 #lang racket/base
 
-(require (prefix-in r: racket/promise)
-         "private/strip-prefix.rkt")
+; This implementation of promises is necessarily incompatible with racket/promise because R7RS allows
+; `force` to be called on promises that are currently running. It is partially based on the sample
+; implementation given in section 7.3 of the R7RS specification.
 
-(provide (strip-colon-prefix-out r:delay delay-force r:force make-promise r:promise?))
+(provide delay delay-force force make-promise promise?)
+
+(struct promise (done? value) #:mutable)
+
+(define-syntax-rule (delay expr)
+  (delay-force (promise #t expr)))
 
 (define-syntax-rule (delay-force expr)
-  (r:delay (r:force expr)))
+  (promise #f (λ () expr)))
 
-(define (make-promise x)
-  (r:lazy x))
+(define (force p)
+  (if (promise? p)
+      (if (promise-done? p)
+          (force (promise-value p))
+          (let ([v ((promise-value p))])
+            (unless (promise-done? p)
+              (set-promise-value! p v)
+              (set-promise-done?! p #t))
+            (force v)))
+      p))
+
+(define (make-promise v)
+  (if (promise? v) v
+      (delay v)))

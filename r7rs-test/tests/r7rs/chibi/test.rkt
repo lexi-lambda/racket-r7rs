@@ -10,7 +10,7 @@
    current-test-applier current-test-handler current-test-skipper
    current-test-group-reporter test-failure-count
    current-test-epsilon current-test-comparator)
-  (import (scheme base)
+  (import (except (scheme base) current-error-port)
           (scheme write)
           (scheme complex)
           (scheme process-context)
@@ -19,7 +19,15 @@
   (cond-expand
    (chibi
     (import (only (chibi) pair-source print-exception protect)))
+   ; FIXME: This should use the "racket" feature for cond-expand
    (else
+    (import (only (racket base) error-display-handler current-error-port exn-message))
+    (begin
+      (define (pair-source x) #f)
+      (define (print-exception ex out)
+        (parameterize ((current-error-port out))
+          ((error-display-handler) (exn-message ex) ex)))))
+   #;(else
     (begin
       (define (pair-source x) #f)
       (define print-exception write))))
