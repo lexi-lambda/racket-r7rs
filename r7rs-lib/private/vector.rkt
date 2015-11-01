@@ -3,7 +3,7 @@
 (require compatibility/mlist
          racket/contract)
 
-(provide vector->list vector-fill!)
+(provide vector->list vector-fill! vector-map)
 
 (define/contract (vector->list vec [start 0] [end (vector-length vec)])
   ([vector?] [exact-nonnegative-integer? exact-nonnegative-integer?] . ->* . mlist?)
@@ -28,3 +28,9 @@
     (raise-range-error 'vector-fill! "vector" "ending " end vec 0 (vector-length vec)))
   (for ([i (in-range start end)])
     (vector-set! vec i v)))
+
+(define/contract (vector-map proc . vecs)
+  ([(unconstrained-domain-> any/c)] #:rest (non-empty-listof vector?) . ->* . vector?)
+  (list->vector (for/fold ([acc null])
+                          ([i (in-range (sub1 (apply min (map vector-length vecs))) -1 -1)])
+                  (cons (apply proc (map (λ (v) (vector-ref v i)) vecs)) acc))))

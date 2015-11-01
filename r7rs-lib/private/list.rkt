@@ -2,9 +2,10 @@
 
 (require compatibility/mlist
          racket/contract
+         (prefix-in r: racket/base)
          (prefix-in 6: rnrs/lists-6))
 
-(provide assoc list-copy list-set! make-list member)
+(provide assoc list-copy list-set! make-list map member)
 
 (define assoc
   (case-lambda
@@ -25,10 +26,16 @@
         (set-mcar! lst v)
         (loop (mcdr lst) (sub1 n)))))
 
-(define/contract (make-list n v)
-  (exact-nonnegative-integer? any/c . -> . mlist?)
+(define/contract (make-list n [v #f])
+  ([exact-nonnegative-integer?] [any/c] . ->* . mlist?)
   (if (zero? n) null
       (mcons v (make-list (sub1 n) v))))
+
+(define/contract (map proc . lsts)
+  ([(unconstrained-domain-> any/c)] #:rest (non-empty-listof (or/c mpair? null?)) . ->* . mlist?)
+  (if (ormap null? lsts) null
+      (mcons (apply proc (r:map mcar lsts))
+             (apply map proc (r:map mcdr lsts)))))
 
 (define member
   (case-lambda

@@ -51,9 +51,11 @@
   (for ([i (in-range start end)])
     (string-set! str i c)))
 
-(define/contract (string-map proc str0 . strs)
-  ([(unconstrained-domain-> char?) string?] #:rest (listof string?) . ->* . string?)
-  (list->string (apply map proc (map string->list (cons str0 strs)))))
+(define/contract (string-map proc . strs)
+  ([(unconstrained-domain-> char?)] #:rest (non-empty-listof string?) . ->* . string?)
+  (list->string (for/fold ([acc null])
+                          ([i (in-range (sub1 (apply min (map string-length strs))) -1 -1)])
+                  (cons (apply proc (map (λ (s) (string-ref s i)) strs)) acc))))
 
 (define/contract (vector->string vec [start 0] [end (vector-length vec)])
   ([vector?] [exact-integer? exact-integer?] . ->* . string?)
