@@ -13,7 +13,7 @@
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in 7: (multi-in "private" ("case.rkt" "cond-expand.rkt" "define-values.rkt"
                                             "exception.rkt" "list.rkt" "math.rkt" "record.rkt"
-                                            "string.rkt" "strip-prefix.rkt"))))
+                                            "string.rkt" "strip-prefix.rkt" "vector.rkt"))))
 
 (provide
  (7:strip-colon-prefix-out
@@ -35,15 +35,15 @@
   6:list? 6:make-bytevector 7:make-list r:make-parameter 6:make-string 6:make-vector 6:map 6:max
   7:member 5:memq 5:memv 5:min 5:modulo 6:negative? 5:newline 6:not 6:null? 6:number->string 6:number?
   6:numerator 6:odd? r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open?
-  6:pair? r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient
+  6:pair? r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 7:quote 5:quotient
   6:raise 6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
   5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 7:string->list 6:string->number
   6:string->symbol 7:string->vector 6:string-append 7:string-copy r:string-copy! 7:string-fill!
   6:string-for-each 6:string-length 7:string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
   6:string=? 6:string>=? 6:string>? 6:string? 6:substring 6:symbol->string 6:symbol=? 6:symbol?
   syntax-error 6:textual-port? 6:truncate 7:truncate-quotient 7:truncate-remainder 7:truncate/
-  6:unless 6:unquote 6:unquote-splicing 6:values 6:vector 6:vector->list 7:vector->string
-  r:vector-append r:vector-copy r:vector-copy! 6:vector-fill! 6:vector-for-each 6:vector-length
+  6:unless 6:unquote 6:unquote-splicing 6:values 6:vector 7:vector->list 7:vector->string
+  r:vector-append r:vector-copy r:vector-copy! 7:vector-fill! 6:vector-for-each 6:vector-length
   6:vector-map 6:vector-ref 6:vector-set! 6:vector? 6:when 6:with-exception-handler 5:write-char
   r:write-string 6:zero?)
  (rename-out [r:bytes bytevector]
@@ -84,6 +84,31 @@
 (define/contract (output-port-open? port)
   (output-port? . -> . boolean?)
   (not (port-closed? port)))
+
+(define (to-mutable v)
+  (cond
+    [(pair? v) (mcons (to-mutable (car v))
+                      (to-mutable (cdr v)))]
+    [(vector? v)
+     (vector->immutable-vector (list->vector (map to-mutable (vector->list v))))]
+    [else v]))
+
+; This is adapted from 5:quote, which makes vectors mutable. We're content to let vectors remain
+; immutable here.
+(define-syntax 7:quote
+  (syntax-parser
+    [(_ form)
+     ; Look for quoted pairs:
+     (if (let loop ([form #'form])
+           (syntax-parse form
+             [(a . b) #t]
+             [#(a ...)
+              (ormap loop (syntax->list #'(a ...)))]
+             [_ #f]))
+         ; quote has to create mpairs:
+         (syntax-local-lift-expression #'(to-mutable 'form))
+         ; no pairs to worry about:
+         #'(r:quote form))]))
 
 (define-syntax syntax-error
   (syntax-parser
