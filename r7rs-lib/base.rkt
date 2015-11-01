@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/contract
+(require compatibility/mlist
+         racket/contract
          racket/require
          (for-syntax (for-syntax racket/base
                                  syntax/parse)
@@ -9,7 +10,8 @@
                      syntax/parse
                      (prefix-in reader: "lang/reader.rkt"))
          (prefix-in 5: r5rs)
-         (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
+         (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6
+                                       lists-6)))
          (prefix-in r: (multi-in racket (base include list math vector)))
          (multi-in "private" ("case.rkt" "cond-expand.rkt" "define-values.rkt" "exception.rkt"
                               "math.rkt" "record.rkt" "strip-prefix.rkt")))
@@ -17,7 +19,7 @@
 (provide
  (strip-colon-prefix-out
   (for-syntax 6:_ 6:... syntax-rules)
-  6:* 6:+ 6:- 6:/ 6:< 6:<= 6:= 6:=> 6:> 6:>= 6:abs 6:and 6:append 6:apply 5:assoc 5:assq 5:assv
+  6:* 6:+ 6:- 6:/ 6:< 6:<= 6:= 6:=> 6:> 6:>= 6:abs 6:and 6:append 6:apply assoc 5:assq 5:assv
   6:begin 6:binary-port? 6:boolean=? 6:boolean? r:bytes r:bytes-append 6:bytevector-copy
   6:bytevector-copy! 6:bytevector-length 6:bytevector-u8-ref 6:bytevector-u8-set! 6:bytevector? 6:caar
   6:cadr 6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car case
@@ -31,7 +33,7 @@
   6:inexact? input-port-open? 6:input-port? 6:integer->char 6:integer? 6:lambda 6:lcm 6:length 6:let
   6:let* 6:let*-values 6:let-syntax 6:let-values 6:letrec 6:letrec* 6:letrec-syntax 6:list
   6:list->string 6:list->vector list-copy 6:list-ref list-set! 6:list-tail 6:list? 6:make-bytevector
-  r:make-list r:make-parameter 6:make-string 6:make-vector 6:map 6:max 5:member 5:memq 5:memv 5:min
+  make-list r:make-parameter 6:make-string 6:make-vector 6:map 6:max member 5:memq 5:memv 5:min
   5:modulo 6:negative? 5:newline 6:not 6:null? 6:number->string 6:number? 6:numerator 6:odd?
   r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open? 6:pair?
   r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient 6:raise
@@ -63,6 +65,11 @@
              [r:write-bytes write-bytevector]
              [r:write-byte write-u8]))
 
+(define assoc
+  (case-lambda
+    ([el alst]    (6:assoc el alst))
+    ([el alst =?] (6:assp (λ (x) (=? el x)) alst))))
+
 (define-for-syntax (read-r7rs-syntax src in)
   (reader:r7rs-parameterize-read
    (λ () (read-syntax src in))))
@@ -80,9 +87,11 @@
   (input-port? . -> . boolean?)
   (not (port-closed? port)))
 
-(define/contract (list-copy lst)
-  (6:list? . -> . 6:list?)
-  (6:map values lst))
+; R7RS defines list-copy in such a way so that it may operate on improper lists
+(define (list-copy v)
+  (if (mpair? v)
+      (mcons (mcar v) (list-copy (mcdr v)))
+      v))
 
 (define/contract (list-set! lst n v)
   (6:list? exact-nonnegative-integer? any/c . -> . void?)
@@ -91,6 +100,14 @@
     (if (zero? n)
         (5:set-car! lst v)
         (loop (5:cdr lst) (sub1 n)))))
+
+(define (make-list k v)
+  (list->mlist (r:make-list k v)))
+
+(define member
+  (case-lambda
+    [(el lst)    (6:member el lst)]
+    [(el lst =?) (6:memp (λ (x) (=? el x)) lst)]))
 
 (define/contract (output-port-open? port)
   (output-port? . -> . boolean?)
