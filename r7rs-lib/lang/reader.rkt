@@ -2,12 +2,15 @@
 
 #:wrapper1 r7rs-parameterize-read
 
-(require (prefix-in reader: "private/string.rkt"))
+(require racket/require
+         (prefix-in reader: (multi-in "private" ("char.rkt" "string.rkt"))))
 
 (provide r7rs-parameterize-read)
 
 (define (make-r7rs-readtable base)
-  (make-readtable base #\" 'terminating-macro reader:read-string))
+  (make-readtable base
+                  #\" 'terminating-macro reader:read-string
+                  #\\ 'dispatch-macro reader:read-char))
 
 (define (r7rs-parameterize-read do-read)
   (parameterize ([read-accept-infix-dot #f]
