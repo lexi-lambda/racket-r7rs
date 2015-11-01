@@ -10,8 +10,7 @@
   (make-readtable base #\" 'terminating-macro reader:read-string))
 
 (define (r7rs-parameterize-read do-read)
-  (parameterize ([read-case-sensitive #f]
-                 [read-accept-infix-dot #f]
+  (parameterize ([read-accept-infix-dot #f]
                  [read-curly-brace-as-paren #f]
                  [read-square-bracket-as-paren #f]
                  [current-readtable (make-r7rs-readtable (current-readtable))])
