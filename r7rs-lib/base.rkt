@@ -37,7 +37,7 @@
   r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 6:quote 5:quotient 6:raise
   6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
   5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 6:string->list 6:string->number
-  6:string->symbol string->vector 6:string-append 6:string-copy r:string-copy! 5:string-fill!
+  6:string->symbol string->vector 6:string-append string-copy r:string-copy! 5:string-fill!
   6:string-for-each 6:string-length string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
   6:string=? 6:string>=? 6:string>? 6:string? 6:substring 6:symbol->string 6:symbol=? 6:symbol?
   syntax-error 6:textual-port? 6:truncate truncate-quotient truncate-remainder truncate/ 6:unless
@@ -110,6 +110,15 @@
           [si (in-range start end)])
       (vector-set! vec vi (string-ref str si)))
     vec))
+
+(define/contract string-copy
+  (case-> (string? . -> . string?)
+          (string? exact-nonnegative-integer? . -> . string?)
+          (string? exact-nonnegative-integer? exact-nonnegative-integer? . -> . string?))
+  (case-lambda
+    [(s)      (r:string-copy s)]
+    [(s st)   (r:substring s st)]
+    [(s st e) (r:substring s st e)]))
 
 (define/contract (string-map proc str0 . strs)
   ([(unconstrained-domain-> char?) string?] #:rest (listof string?) . ->* . string?)
