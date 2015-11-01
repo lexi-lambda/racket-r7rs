@@ -30,4 +30,12 @@
     (begin
       (define (pair-source x) #f)
       (define print-exception write))))
-  (include "test.sps"))
+  (include "test.sps")
+  (cond-expand
+   (racket
+    (import (only (rackunit log) test-log!))
+    (current-test-applier
+     (lambda (expect expr info)
+       (let ((r (test-default-applier expect expr info)))
+         (test-log! (eq? r 'PASS))
+         r))))))
