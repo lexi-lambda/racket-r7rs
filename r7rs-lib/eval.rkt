@@ -1,19 +1,11 @@
 #lang racket/base
 
-(require (prefix-in r: racket/base))
+(require (prefix-in r: racket/base)
+         "private/mutability.rkt")
 
 (provide environment eval)
 
 (define-namespace-anchor anchor)
-
-(define (to-immutable p)
-  (cond
-    [(mpair? p) (cons (to-immutable (mcar p))
-                      (to-immutable (mcdr p)))]
-    [(vector? p)
-     (let ([v (list->vector (map to-immutable (vector->list p)))])
-       (if (immutable? p) (vector->immutable-vector v) v))]
-    [else p]))
 
 (define (environment . import-specs)
   (let ([ns (namespace-anchor->empty-namespace anchor)])

@@ -12,8 +12,9 @@
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in 7: (multi-in "private" ("case.rkt" "cond-expand.rkt" "define-values.rkt"
-                                            "exception.rkt" "list.rkt" "math.rkt" "record.rkt"
-                                            "string.rkt" "strip-prefix.rkt" "vector.rkt"))))
+                                            "exception.rkt" "list.rkt" "math.rkt" "mutability.rkt"
+                                            "record.rkt" "string.rkt" "strip-prefix.rkt"
+                                            "vector.rkt"))))
 
 (provide
  (7:strip-colon-prefix-out
@@ -85,14 +86,6 @@
   (output-port? . -> . boolean?)
   (not (port-closed? port)))
 
-(define (to-mutable v)
-  (cond
-    [(pair? v) (mcons (to-mutable (car v))
-                      (to-mutable (cdr v)))]
-    [(vector? v)
-     (vector->immutable-vector (list->vector (map to-mutable (vector->list v))))]
-    [else v]))
-
 ; This is adapted from 5:quote, which makes vectors mutable. We're content to let vectors remain
 ; immutable here.
 (define-syntax 7:quote
@@ -106,7 +99,7 @@
               (ormap loop (syntax->list #'(a ...)))]
              [_ #f]))
          ; quote has to create mpairs:
-         (syntax-local-lift-expression #'(to-mutable 'form))
+         (syntax-local-lift-expression #'(7:to-mutable 'form))
          ; no pairs to worry about:
          #'(r:quote form))]))
 

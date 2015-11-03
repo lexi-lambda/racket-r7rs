@@ -15,7 +15,7 @@
        (cond
          [(and (equal? first-char #\x) (peek-hex? in))
           (read-char-code in)]
-         [(char-alphabetic? (peek-char in))
+         [(peek-alphabetic? in)
           (read-char-name in first-char)]
          [else first-char]))]
     ; read-syntax
@@ -25,8 +25,15 @@
               [final-pos (file-position in)])
          (datum->syntax #f datum (list src line col pos (- final-pos pos)))))]))
 
+(define (peek-alphabetic? port)
+  (let ([c (peek-char port)])
+    (and (not (eof-object? c))
+         (char-alphabetic? c))))
+
 (define (peek-hex? port)
-  (regexp-match? #rx"[a-fA-F0-9]" (string (peek-char port))))
+  (let ([c (peek-char port)])
+    (and (not (eof-object? c))
+         (regexp-match? #rx"[a-fA-F0-9]" (string c)))))
 
 (define (read-char-code in)
   (let loop ([digits '()])
@@ -38,7 +45,7 @@
   (let*-values ([(line col pos) (port-next-location in)]
                 [(pos) (- pos 2)])
     (let loop ([chars (list first-char)])
-      (if (char-alphabetic? (peek-char in))
+      (if (peek-alphabetic? in)
           (loop (cons (read-char in) chars))
           (match (list->string (reverse chars))
             ["alarm"     #\u0007]
