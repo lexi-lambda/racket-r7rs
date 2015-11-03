@@ -5,4 +5,5 @@
 (define deps
   '("base"))
 (define build-deps
-  '("r7rs-lib"))
+  '("r7rs-lib"
+    "rackunit-lib"))
