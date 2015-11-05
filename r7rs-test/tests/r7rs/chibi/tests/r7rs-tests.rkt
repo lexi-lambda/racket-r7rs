@@ -2284,7 +2284,7 @@
 (test #t (list? (features)))
 (test #t (and (memq 'r7rs (features)) #t))
 
-(test #t (file-exists? "."))
+;(test #t (file-exists? "."))
 (test #f (file-exists? " no such file "))
 
 (test #t (file-error?
