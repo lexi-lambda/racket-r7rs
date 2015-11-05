@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require syntax/readerr)
+(require racket/port
+         syntax/readerr)
 
 (provide read-string)
 
@@ -30,18 +31,20 @@
       [else  c])))
 
 (define (read-escape in)
-  (let ([c (read-char in)])
+  (let ([c (peek-char in)])
     (case c
-      [(#\a) #\u0007]
-      [(#\b) #\u0008]
-      [(#\t) #\tab]
-      [(#\n) #\newline]
-      [(#\r) #\return]
-      [(#\") #\"]
-      [(#\\) #\\]
-      [(#\|) #\|]
-      [(#\x) (read-hex-escape in)]
-      [else  c])))
+      [(#\a) (read-char in) #\u0007]
+      [(#\b) (read-char in) #\u0008]
+      [(#\t) (read-char in) #\tab]
+      [(#\n) (read-char in) #\newline]
+      [(#\r) (read-char in) #\return]
+      [(#\") (read-char in) #\"]
+      [(#\\) (read-char in) #\\]
+      [(#\|) (read-char in) #\|]
+      [(#\x) (read-char in) (read-hex-escape in)]
+      [else (if (peek-only-intraline-whitespace? in)
+                (read/skip-intraline-whitespace in)
+                c)])))
 
 (define (read-hex-escape in)
   (let*-values ([(line col pos) (port-next-location in)]
@@ -56,3 +59,22 @@
           [(#\;) (integer->char (string->number (list->string (reverse digits)) 16))]
           [else (raise-read-error "Invalid or unterminated hex escape in string" (current-source)
                                   line col pos (- (add1 (file-position in)) pos))])))))
+
+(define (peek-only-intraline-whitespace? in)
+  (let ([in (peeking-input-port in)])
+    (let loop ()
+      (case (read-char in)
+        [(#\space #\tab) (loop)]
+        [(#\newline)     #t]
+        [else            #f]))))
+
+(define (read/skip-intraline-whitespace in)
+  (let loop ()
+    (case (peek-char in)
+      [(#\space #\tab) (read-char in) (loop)]
+      [(#\newline)
+       (read-char in)
+       (let loop ()
+         (case (peek-char in)
+           [(#\space #\tab) (read-char in) (loop)]
+           [else (read-string-char in)]))])))
