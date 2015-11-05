@@ -2047,7 +2047,14 @@
 (test '(a d) (read (open-input-string "(a #; #;b c d)")))
 (test '(a e) (read (open-input-string "(a #;(b #;c d) e)")))
 (test '(a . c) (read (open-input-string "(a . #;b c)")))
-(test '(a . b) (read (open-input-string "(a . b #;c)")))
+
+(import (only (racket base) version)
+        (only (version utils) version<?))
+
+; This test exposed a bug in Racket, but since these are edge cases, anyway, it seems alright to let
+; this functionality just degrade on older Racket versions.
+(unless (version<? (version) "6.3.0.4")
+  (test '(a . b) (read (open-input-string "(a . b #;c)"))))
 
 (define (test-read-error str)
   (test-assert str
