@@ -35,9 +35,9 @@
   6:letrec-syntax 6:list 6:list->string 6:list->vector 7:list-copy 6:list-ref 7:list-set! 6:list-tail
   6:list? 6:make-bytevector 7:make-list r:make-parameter 6:make-string 6:make-vector 7:map 6:max
   7:member 5:memq 5:memv 5:min 5:modulo 6:negative? 5:newline 6:not 6:null? 6:number->string 6:number?
-  6:numerator 6:odd? r:open-input-string r:open-output-string 6:or 6:output-port? output-port-open?
-  6:pair? r:parameterize 5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 7:quote 5:quotient
-  6:raise 6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
+  6:numerator 6:odd? 7:open-output-string 6:or 6:output-port? output-port-open? 6:pair? r:parameterize
+  5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 7:quote 5:quotient 6:raise
+  6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
   5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 7:string->list 6:string->number
   6:string->symbol 7:string->vector 6:string-append 7:string-copy r:string-copy! 7:string-fill!
   6:string-for-each 6:string-length 7:string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
@@ -53,6 +53,7 @@
              [r:flush-output flush-output-port]
              [r:exn:fail:read? read-error?]
              [r:open-input-bytes open-input-bytevector]
+             [6:open-string-input-port open-input-string]
              [r:open-output-bytes open-output-bytevector]
              [r:peek-byte peek-u8]
              [r:read-bytes read-bytevector]
@@ -81,6 +82,10 @@
 (define/contract (input-port-open? port)
   (input-port? . -> . boolean?)
   (not (port-closed? port)))
+
+(define (7:open-output-string)
+  (let-values ([(port extract) (6:open-string-output-port)])
+    port))
 
 (define/contract (output-port-open? port)
   (output-port? . -> . boolean?)
