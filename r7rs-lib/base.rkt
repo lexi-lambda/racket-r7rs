@@ -11,21 +11,21 @@
          (prefix-in r: (multi-in racket (base include math vector)))
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
-         (prefix-in 7: (multi-in "private" ("case.rkt" "cond-expand.rkt" "define-values.rkt"
-                                            "exception.rkt" "list.rkt" "math.rkt" "mutability.rkt"
-                                            "record.rkt" "string.rkt" "strip-prefix.rkt"
-                                            "vector.rkt"))))
+         (prefix-in 7: (multi-in "private" ("bytevector.rkt" "case.rkt" "cond-expand.rkt"
+                                            "define-values.rkt" "exception.rkt" "list.rkt" "math.rkt"
+                                            "mutability.rkt" "record.rkt" "string.rkt"
+                                            "strip-prefix.rkt" "vector.rkt"))))
 
 (provide
  (7:strip-colon-prefix-out
   (for-syntax 6:_ 6:... syntax-rules)
   6:* 6:+ 6:- 6:/ 6:< 6:<= 6:= 6:=> 6:> 6:>= 6:abs 6:and 6:append 6:apply 7:assoc 5:assq 5:assv
-  6:begin 6:binary-port? 6:boolean=? 6:boolean? r:bytes r:bytes-append 6:bytevector-copy
-  6:bytevector-copy! 6:bytevector-length 6:bytevector-u8-ref 6:bytevector-u8-set! 6:bytevector? 6:caar
-  6:cadr 6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car 7:case
-  6:cdar 6:cddr 6:cdr 6:ceiling 6:char->integer 5:char-ready? 6:char<=? 6:char<? 6:char=? 6:char>=?
-  6:char>? 6:char? 5:close-input-port 5:close-output-port 6:close-port 6:complex? 6:cond 7:cond-expand
-  6:cons 6:current-error-port 6:current-input-port 6:current-output-port 6:define 7:define-record-type
+  6:begin 6:binary-port? 6:boolean=? 6:boolean? 7:bytevector-copy
+  6:bytevector-length 6:bytevector-u8-ref 6:bytevector-u8-set! 6:bytevector? 6:caar 6:cadr
+  6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car 7:case 6:cdar
+  6:cddr 6:cdr 6:ceiling 6:char->integer 5:char-ready? 6:char<=? 6:char<? 6:char=? 6:char>=? 6:char>?
+  6:char? 5:close-input-port 5:close-output-port 6:close-port 6:complex? 6:cond 7:cond-expand 6:cons
+  6:current-error-port 6:current-input-port 6:current-output-port 6:define 7:define-record-type
   6:define-syntax 7:define-values 6:denominator 6:do 6:dynamic-wind 6:else 6:eof-object 6:eof-object?
   6:eq? 6:equal? 6:eqv? 7:error 7:error-object-irritants 7:error-object-message 7:error-object?
   6:even? 6:exact 6:exact-integer-sqrt r:exact-integer? 6:exact? 6:expt 7:features 6:floor
@@ -39,15 +39,17 @@
   5:peek-char 6:port? 6:positive? 6:procedure? 6:quasiquote 7:quote 5:quotient 6:raise
   6:raise-continuable 6:rational? 6:rationalize 5:read-char r:read-line r:read-string 6:real?
   5:remainder 6:reverse 6:round 6:set! 5:set-car! 5:set-cdr! 6:string 7:string->list 6:string->number
-  6:string->symbol 7:string->vector 6:string-append 7:string-copy r:string-copy! 7:string-fill!
-  6:string-for-each 6:string-length 7:string-map 6:string-ref 5:string-set! 6:string<=? 6:string<?
-  6:string=? 6:string>=? 6:string>? 6:string? 6:substring 6:symbol->string 6:symbol=? 6:symbol?
-  syntax-error 6:textual-port? 6:truncate 7:truncate-quotient 7:truncate-remainder 7:truncate/
-  6:unless 6:unquote 6:unquote-splicing 6:values 6:vector 7:vector->list 7:vector->string
-  r:vector-append r:vector-copy r:vector-copy! 7:vector-fill! 6:vector-for-each 6:vector-length
-  7:vector-map 6:vector-ref 6:vector-set! 6:vector? 6:when 6:with-exception-handler 5:write-char
-  r:write-string 6:zero?)
+  6:string->symbol 7:string->utf8 7:string->vector 6:string-append 7:string-copy r:string-copy!
+  7:string-fill! 6:string-for-each 6:string-length 7:string-map 6:string-ref 5:string-set! 6:string<=?
+  6:string<? 6:string=? 6:string>=? 6:string>? 6:string? 6:substring 6:symbol->string 6:symbol=?
+  6:symbol? syntax-error 6:textual-port? 6:truncate 7:truncate-quotient 7:truncate-remainder
+  7:truncate/ 6:unless 6:unquote 6:unquote-splicing 7:utf8->string 6:values 6:vector 7:vector->list
+  7:vector->string r:vector-append r:vector-copy r:vector-copy! 7:vector-fill! 6:vector-for-each
+  6:vector-length 7:vector-map 6:vector-ref 6:vector-set! 6:vector? 6:when 6:with-exception-handler
+  5:write-char r:write-string 6:zero?)
  (rename-out [r:bytes bytevector]
+             [r:bytes-append bytevector-append]
+             [r:bytes-copy! bytevector-copy!]
              [r:get-output-bytes get-output-bytevector]
              [r:exn:fail:filesystem? file-error?]
              [r:flush-output flush-output-port]
@@ -60,9 +62,7 @@
              [r:read-bytes! read-bytevector!]
              [r:read-byte read-u8]
              [r:sqr square]
-             [r:string->bytes/utf-8 string->utf8]
              [r:byte-ready? u8-ready?]
-             [r:bytes->string/utf-8 utf8->string]
              [r:write-bytes write-bytevector]
              [r:write-byte write-u8]))
 

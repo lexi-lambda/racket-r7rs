@@ -1401,10 +1401,8 @@
 
 (test-begin "6.9 Bytevectors")
 
-#|
 (test #t (bytevector? #u8()))
 (test #t (bytevector? #u8(0 1 2)))
-|#
 (test #f (bytevector? #()))
 (test #f (bytevector? #(0 1 2)))
 (test #f (bytevector? '()))
@@ -1420,7 +1418,6 @@
 (test 1 (bytevector-u8-ref (bytevector 0 1 2) 1))
 (test 2 (bytevector-u8-ref (bytevector 0 1 2) 2))
 
-#|
 (test #u8(0 255 2)
     (let ((bv (bytevector 0 1 2))) (bytevector-u8-set! bv 1 255) bv))
 
@@ -1475,7 +1472,6 @@
 (test #u8(#x42 #x43) (string->utf8 "ABC" 1))
 (test #u8(#x42) (string->utf8 "ABC" 1 2))
 (test #u8(#xCE #xBB) (string->utf8 "λ"))
-|#
 
 (test-end)
 
@@ -1802,7 +1798,7 @@
 
 (test #t (textual-port? (open-input-string "abc")))
 (test #t (textual-port? (open-output-string)))
-;(test #t (binary-port? (open-input-bytevector #u8(0 1 2))))
+(test #t (binary-port? (open-input-bytevector #u8(0 1 2))))
 (test #t (binary-port? (open-output-bytevector)))
 
 (test #t (input-port-open? (open-input-string "abc")))
@@ -1904,7 +1900,6 @@
     (flush-output-port out)
     (get-output-string out)))
 
-#|
 (test #t (eof-object? (read-u8 (open-input-bytevector #u8()))))
 (test 1 (read-u8 (open-input-bytevector #u8(1 2 3))))
 
@@ -1960,7 +1955,6 @@
   (let ((out (open-output-bytevector)))
     (flush-output-port out)
     (get-output-bytevector out)))
-|#
 
 (test #t
     (and (member
@@ -2025,10 +2019,8 @@
 (test #() (read (open-input-string "#()")))
 (test #(a b) (read (open-input-string "#(a b)")))
 
-#|
 (test #u8() (read (open-input-string "#u8()")))
 (test #u8(0 1) (read (open-input-string "#u8(0 1)")))
-|#
 
 (test 'abc (read (open-input-string "abc")))
 (test 'abc (read (open-input-string "abc def")))

@@ -3,8 +3,8 @@
 #:wrapper1 r7rs-parameterize-read
 
 (require racket/require
-         (prefix-in reader: (multi-in "private" ("char.rkt" "directive.rkt" "string.rkt"
-                                                 "symbol.rkt"))))
+         (prefix-in reader: (multi-in "private" ("bytevector.rkt" "char.rkt" "directive.rkt"
+                                                 "string.rkt" "symbol.rkt"))))
 
 (provide r7rs-parameterize-read)
 
@@ -14,6 +14,7 @@
                   #\| 'terminating-macro reader:read-escaped-symbol
                   #\\ 'dispatch-macro reader:read-char
                   #\! 'dispatch-macro reader:read-directive
+                  #\u 'dispatch-macro reader:read-bytevector
                   #f  'non-terminating-macro (reparameterize-read base)))
 
 (define (r7rs-parameterize-read do-read)
