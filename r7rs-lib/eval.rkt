@@ -1,6 +1,18 @@
 #lang racket/base
 
-(require (prefix-in 6: rnrs/eval-6)
-         "private/strip-prefix.rkt")
+(require (prefix-in r: racket/base)
+         "private/mutability.rkt")
 
-(provide (strip-colon-prefix-out 6:environment 6:eval))
+(provide environment eval)
+
+(define-namespace-anchor anchor)
+
+(define (environment . import-specs)
+  (let ([ns (namespace-anchor->empty-namespace anchor)])
+    (parameterize ([current-namespace ns])
+      (namespace-require 'r7rs)
+      (r:eval `(import . ,(map to-immutable import-specs))))
+    ns))
+
+(define (eval expr env)
+  (r:eval (to-immutable expr) env))

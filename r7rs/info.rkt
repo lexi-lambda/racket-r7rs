@@ -1,8 +1,9 @@
 #lang info
 
-(define collection "r7rs")
+(define collection 'multi)
 
 (define deps
-  '("r7rs-lib"))
+  '("base"
+    "r7rs-lib"))
 (define implies
   '("r7rs-lib"))

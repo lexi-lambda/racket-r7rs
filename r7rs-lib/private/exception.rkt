@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/contract
+(require compatibility/mlist
+         racket/contract
          racket/string)
 
 (provide error
@@ -17,4 +18,4 @@
                                 (string-join (map (λ (x) (format "  ~e" x)) irritants) "\n"))
                         (current-continuation-marks)
                         message
-                        irritants)))
+                        (list->mlist irritants))))

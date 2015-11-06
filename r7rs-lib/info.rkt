@@ -3,8 +3,8 @@
 (define collection "r7rs")
 
 (define deps
-  '("compatibility-lib"
-    "base"
+  '("base"
+    "compatibility-lib"
     "r5rs-lib"
     "r6rs-lib"))
 (define build-deps

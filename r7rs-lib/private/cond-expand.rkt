@@ -1,8 +1,5 @@
 #lang racket/base
 
-; This implementation of cond-expand works, but it doesn't actually support any "feature" identifiers.
-; Eventually, some of them should be added.
-
 (require (for-syntax racket/base
                      racket/function
                      syntax/parse)
@@ -11,8 +8,17 @@
 
 (provide cond-expand features)
 
-(define (features)
-  (6:list))
+(define-syntax supported-features
+  '(r7rs racket exact-closed exact-complex ieee-float full-unicode ratios))
+
+(define-syntax (define-features-list stx)
+  (syntax-parse stx
+    [(_ features:id)
+     (with-syntax ([(supported-feature ...) (syntax-local-value #'supported-features)])
+       #'(define (features)
+           (6:list 'supported-feature ...)))]))
+
+(define-features-list features)
 
 (begin-for-syntax
   (define (module-exists? path)
@@ -32,8 +38,11 @@
              #:attr true? (not (attribute req.true?)))
     (pattern (library name:library-name)
              #:attr true? (module-exists? (syntax->datum #'name.module-path)))
-    (pattern 6:else #:attr true? #t)
-    (pattern _:id #:attr true? #f)))
+    (pattern 6:else
+             #:attr true? #t)
+    (pattern feature:id
+             #:attr true? (member (syntax->datum #'feature)
+                                  (syntax-local-value #'supported-features)))))
 
 (define-syntax cond-expand
   (syntax-parser
@@ -45,6 +54,14 @@
 
 (module+ test
   (require rackunit)
+
+  (check-true
+   (cond-expand [racket #t]
+                [6:else #f]))
+
+  (check-false
+   (cond-expand [non-supported-feature #t]
+                [6:else #f]))
 
   (check-true
    (cond-expand [(library (racket base)) #t]
