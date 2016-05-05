@@ -25,7 +25,7 @@
   6:call-with-current-continuation 6:call-with-port 6:call-with-values 6:call/cc 6:car 7:case 6:cdar
   6:cddr 6:cdr 6:ceiling 6:char->integer 5:char-ready? 6:char<=? 6:char<? 6:char=? 6:char>=? 6:char>?
   6:char? 5:close-input-port 5:close-output-port 6:close-port 6:complex? 6:cond 7:cond-expand 6:cons
-  6:current-error-port 6:current-input-port 6:current-output-port 6:define 7:define-record-type
+  r:current-error-port r:current-input-port r:current-output-port 6:define 7:define-record-type
   6:define-syntax 7:define-values 6:denominator 6:do 6:dynamic-wind 6:else 6:eof-object 6:eof-object?
   6:eq? 6:equal? 6:eqv? 7:error 7:error-object-irritants 7:error-object-message 7:error-object?
   6:even? 6:exact 6:exact-integer-sqrt r:exact-integer? 6:exact? 6:expt 7:features 6:floor

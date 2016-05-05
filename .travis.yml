@@ -24,5 +24,4 @@ install:
   - raco pkg install -in r7rs-test --deps search-auto --link $TRAVIS_BUILD_DIR/r7rs-test
 
 script:
-  - raco test -p r7rs-lib
-  - raco test $TRAVIS_BUILD_DIR/r7rs-test/tests/r7rs/chibi/tests/r7rs-tests.rkt
+  - raco test -p r7rs-lib r7rs-test

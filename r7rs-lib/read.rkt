@@ -6,6 +6,6 @@
 
 (provide read)
 
-(define (read in)
+(define (read [in (current-input-port)])
   (to-mutable (reader:r7rs-parameterize-read
                (λ () (r:read in)))))
