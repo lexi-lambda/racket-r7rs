@@ -25,12 +25,12 @@
     #:literals [define-library]
     ; In the simplest case, no R7RS library is defined. Just expand to a Racket module.
     [(_ form:non-library ...)
-     #'(5:#%module-begin form ...)]
+     #'(module-begin/configure-runtime form ...)]
     ; One R7RS library definition is allowed, but it is ignored and treated like `begin`.
     [(_ pre-form:non-library ...
         (define-library lib-form ...)
         post-form:non-library ...)
-     #'(5:#%module-begin pre-form ... (define-library lib-form ...) post-form ...)]
+     #'(module-begin/configure-runtime pre-form ... (define-library lib-form ...) post-form ...)]
     ; More than one library definition in a single Racket module is an error.
     [(_ _:non-library ...
         (define-library . _)
@@ -40,3 +40,17 @@
      (raise-syntax-error 'define-library
                          "More than one library definition in a single module is not permitted"
                          #'second-lib)]))
+
+(define-syntax module-begin/configure-runtime
+  (syntax-parser
+    [(_ body ...)
+     #'(#%plain-module-begin
+        (module configure-runtime racket/base
+          (let ([old-print (current-print)])
+            (current-print
+             (λ (val)
+               (parameterize ([print-as-expression #f]
+                              [print-pair-curly-braces #t]
+                              [print-mpair-curly-braces #f])
+                 (old-print val))))))
+        body ...)]))
