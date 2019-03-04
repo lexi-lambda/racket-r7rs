@@ -50,7 +50,7 @@
     (pattern (rename spec:import-spec [id-orig:id id-new:id] ...)
              #:with require-spec
              #'(rename-in spec.require-spec [id-orig id-new] ...))
-    (pattern (prefix prefix-id:id spec:import-spec)
+    (pattern (prefix spec:import-spec prefix-id:id)
              #:with require-spec
              #'(prefix-in prefix-id spec.require-spec))
     (pattern name:library-name
