@@ -6,11 +6,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        racket-version: [ '6.12', '7.4', '7.9', '8.0', stable ]
+        racket-version: [current]
     steps:
     - uses: actions/checkout@v2
       with: { path: repo }
-    - uses: Bogdanp/setup-racket@v1.5
+    - uses: Bogdanp/setup-racket@v1.7
       with:
         version: ${{ matrix.racket-version }}
         dest: '$GITHUB_WORKSPACE/racket'

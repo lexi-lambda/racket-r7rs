@@ -4,7 +4,7 @@
                      syntax/parse)
          racket/require
          (prefix-in 5: r5rs)
-         (prefix-in 7: "base.rkt")
+         (prefix-in 7: "private/quote.rkt")
          (multi-in "private" ("library.rkt" "strip-prefix.rkt")))
 
 (provide
@@ -12,9 +12,6 @@
  (strip-colon-prefix-out
   5:#%app 7:#%datum 5:#%expression 5:#%require 5:#%top 5:#%top-interaction)
  (rename-out [module-begin #%module-begin]))
-
-(define-syntax-rule (7:#%datum . datum)
-  (7:quote datum))
 
 (define-syntax (module-begin stx)
   (define-syntax-class non-library

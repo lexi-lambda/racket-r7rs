@@ -2,23 +2,25 @@
 
 (require racket/contract
          racket/require
+         racket/shared
          (for-syntax (for-syntax racket/base
                                  syntax/parse)
                      (except-in racket/base syntax-rules)
                      racket/syntax
                      syntax/parse
-                     (prefix-in reader: "lang/reader.rkt"))
+                     (prefix-in reader: "lang/reader.rkt")
+                     (prefix-in 7: "private/syntax-rules.rkt"))
          (prefix-in r: (multi-in racket (base include math vector)))
          (prefix-in 5: r5rs)
          (prefix-in 6: (multi-in rnrs (base-6 bytevectors-6 control-6 exceptions-6 io/ports-6)))
          (prefix-in 7: (multi-in "private" ("bytevector.rkt" "case.rkt" "cond-expand.rkt"
                                             "define-values.rkt" "exception.rkt" "list.rkt" "math.rkt"
-                                            "mutability.rkt" "record.rkt" "string.rkt"
-                                            "strip-prefix.rkt" "vector.rkt"))))
+                                            "quote.rkt" "record.rkt" "string.rkt" "strip-prefix.rkt"
+                                            "vector.rkt"))))
 
 (provide
  (7:strip-colon-prefix-out
-  (for-syntax 6:_ 6:... syntax-rules)
+  (for-syntax 7:syntax-rules 7:_ 7:...)
   6:* 6:+ 6:- 6:/ 6:< 6:<= 6:= 6:=> 6:> 6:>= 6:abs 6:and 6:append 6:apply 7:assoc 5:assq 5:assv
   6:begin 6:binary-port? 6:boolean=? 6:boolean? 7:bytevector-copy
   6:bytevector-length 6:bytevector-u8-ref 6:bytevector-u8-set! 6:bytevector? 6:caar 6:cadr
@@ -91,36 +93,8 @@
   (output-port? . -> . boolean?)
   (not (port-closed? port)))
 
-; This is adapted from 5:quote, which makes vectors mutable. We're content to let vectors remain
-; immutable here.
-(define-syntax 7:quote
-  (syntax-parser
-    [(_ form)
-     ; Look for quoted pairs:
-     (if (let loop ([form #'form])
-           (syntax-parse form
-             [(a . b) #t]
-             [#(a ...)
-              (ormap loop (syntax->list #'(a ...)))]
-             [_ #f]))
-         ; quote has to create mpairs:
-         (syntax-local-lift-expression #'(7:to-mutable 'form))
-         ; no pairs to worry about:
-         #'(r:quote form))]))
-
 (define-syntax syntax-error
   (syntax-parser
     [(_ message:str args ...)
      (apply error (syntax->datum #'message)
             (syntax->datum #'(args ...)))]))
-
-(begin-for-syntax
-  (define-syntax syntax-rules
-    (syntax-parser
-      [(_ dots:id (literal:id ...) clause ...)
-       #'(let-syntax ([dots (make-rename-transformer #'((... ...) (... ...)))])
-           (5:syntax-rules (literal ...)
-                           clause ...))]
-      [(_ (literal:id ...) clause ...)
-       #'(5:syntax-rules (literal ...)
-                         clause ...)])))

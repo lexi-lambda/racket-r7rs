@@ -3,7 +3,7 @@
 (define collection 'multi)
 
 (define deps
-  '("base"))
-(define build-deps
-  '("r7rs-lib"
+  '("base"
+    ["r7rs-lib" #:version "1.1"]
     "rackunit-lib"))
+(define build-deps '())
