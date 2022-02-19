@@ -1,0 +1,22 @@
+name: build
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        racket-version: [ '6.12', '7.4', '7.9', '8.0', stable ]
+    steps:
+    - uses: actions/checkout@v2
+      with: { path: repo }
+    - uses: Bogdanp/setup-racket@v1.5
+      with:
+        version: ${{ matrix.racket-version }}
+        dest: '$GITHUB_WORKSPACE/racket'
+        sudo: never
+    - name: install
+      run: raco pkg install --installation --auto --link
+             repo/r7rs{,-lib,-test}
+    - name: test
+      run: raco test --process -ep r7rs-{lib,test}
