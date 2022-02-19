@@ -46,11 +46,6 @@
     [(_ body ...)
      #'(#%plain-module-begin
         (module configure-runtime racket/base
-          (let ([old-print (current-print)])
-            (current-print
-             (λ (val)
-               (parameterize ([print-as-expression #f]
-                              [print-pair-curly-braces #t]
-                              [print-mpair-curly-braces #f])
-                 (old-print val))))))
+          (require (only-in r7rs/lang/reader configure-runtime!))
+          (configure-runtime!))
         body ...)]))
