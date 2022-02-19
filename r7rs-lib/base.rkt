@@ -76,7 +76,7 @@
      ; make sure each include form has the right lexical context
      (define/with-syntax (inc ...)
        (for/list ([path (in-list (attribute str))])
-         (datum->syntax stx `(,#'r:include/reader ,path ,#'read-r7rs-syntax) path)))
+         (datum->syntax stx (list #'r:include/reader path #'read-r7rs-syntax) stx)))
      #'(begin inc ...)]))
 
 (define/contract (input-port-open? port)

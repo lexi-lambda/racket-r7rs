@@ -19,9 +19,14 @@
     ; read-syntax
     [(c in src line col pos)
      (parameterize ([current-source src])
-       (let* ([datum (read-string c in)]
-              [final-pos (file-position in)])
-         (datum->syntax #f datum (list src line col pos (- final-pos pos)))))]))
+       (define datum (read-string c in))
+       (datum->syntax
+        #f
+        datum
+        (list src line col pos
+              (and pos (let ()
+                         (define-values [line* col* pos*] (port-next-location in))
+                         (- pos* pos))))))]))
 
 (define (read-string-char in)
   (let ([c (read-char in)])
