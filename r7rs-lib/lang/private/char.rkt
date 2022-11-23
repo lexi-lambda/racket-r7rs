@@ -21,9 +21,10 @@
     ; read-syntax
     [(c in src line col pos)
      (parameterize ([current-source src])
-       (let* ([datum (read-char-literal c in)]
+       (let* ([start-pos (file-position in)]
+              [datum (read-char-literal c in)]
               [final-pos (file-position in)])
-         (datum->syntax #f datum (list src line col pos (- final-pos pos)))))]))
+         (datum->syntax #f datum (list src line col pos (- final-pos start-pos)))))]))
 
 (define (peek-alphabetic? port)
   (let ([c (peek-char port)])
