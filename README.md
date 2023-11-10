@@ -1,4 +1,4 @@
-# r7rs [![Build Status](https://img.shields.io/github/workflow/status/lexi-lambda/racket-r7rs/build/master)](https://github.com/lexi-lambda/racket-r7rs/actions/workflows/build.yml)
+# r7rs [![build](https://github.com/lexi-lambda/racket-r7rs/actions/workflows/build.yml/badge.svg)](https://github.com/lexi-lambda/racket-r7rs/actions/workflows/build.yml)
 
 This is an implementation of [R7RS "small"][r7rs] in [Racket][racket]. To use it, install the package and use `#lang r7rs` in your programs.
 
