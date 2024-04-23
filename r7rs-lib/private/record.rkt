@@ -68,41 +68,30 @@
          (map field-accessor (current-record-fields)))
        (define/with-syntax (field-modifiers ...)
          (filter identity (map field-modifier (current-record-fields))))
+       (define/with-syntax (field-index ...)
+         (map index-for-field-name (map field-name (current-record-fields))))
+       (define/with-syntax (field-modifier-index ...)
+         (map index-for-field-name (map field-name (filter field-modifier (current-record-fields)))))
 
        ; generate the definitions
-       #`(define-values (name constructor.name pred? field-accessors ... field-modifiers ...)
-           ; manually create a struct type with all the appropriate options
-           (let-values ([(struct:record make-record record-pred? record-ref record-set!)
-                         (make-struct-type 'name #f #,(length (current-record-fields))
-                                           0 #f '() #f #f '() #f 'constructor.name)])
-
-             ; wrap the struct constructor with a custom proc that handles missing fields
-             (define (construct-record constructor.field ...)
-               (make-record #,@(for/list ([field (in-list (current-record-fields))])
-                                 (if (member (field-name field)
-                                             (attribute constructor.fields)
-                                             free-identifier=?)
-                                     (field-name field)
-                                     #f))))
-
-             ; generate definitions for the accessors and modifiers
-             #,@(for/list ([record-field (in-list (current-record-fields))])
-                  (match-define (field name accessor modifier) record-field)
-                  (define/with-syntax field-index (index-for-field-name name))
-                  ; generate the accessor
-                  (define/with-syntax field-accessor-definition
-                    #`(define (#,accessor record)
-                        (record-ref record field-index)))
-                  ; only generate a modifier if one was specified
-                  (if modifier
-                      #`(begin field-accessor-definition
-                               (define (#,modifier record value)
-                                 (record-set! record field-index value)))
-                      #'field-accessor-definition))
-
-             ; return the values for each definition
-             (values struct:record construct-record record-pred?
-                     field-accessors ... field-modifiers ...))))]))
+       #`(begin
+           (define-values (struct:record make-record pred? field-accessors ... field-modifiers ...)
+             (let-values ([(struct:record make-record record-pred? record-ref record-set!)
+                           (make-struct-type 'name #f #,(length (current-record-fields))
+                                             0 #f '() #f #f '() #f 'constructor.name)])
+               (values struct:record make-record record-pred?
+                       (make-struct-field-accessor record-ref field-index 'field-accessors)
+                       ...
+                       (make-struct-field-mutator record-set! field-modifier-index 'field-modifiers ...)
+                       ...)))
+           ; wrap the struct constructor with a custom proc that handles missing fields
+           (define (constructor.name constructor.field ...)
+             (make-record #,@(for/list ([field (in-list (current-record-fields))])
+                               (if (member (field-name field)
+                                           (attribute constructor.fields)
+                                           free-identifier=?)
+                                   (field-name field)
+                                   #f))))))]))
 
 (module+ test
   (require racket/block
