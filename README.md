@@ -25,4 +25,4 @@ All of the libraries defined in R7RS are available. However, there are a few min
 All other libraries are fully supported.
 
 [racket]: http://racket-lang.org
-[r7rs]: http://trac.sacrideo.us/wg/wiki/R7RSHomePage
+[r7rs]: https://small.r7rs.org/
