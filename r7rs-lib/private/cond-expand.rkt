@@ -8,17 +8,15 @@
 
 (provide cond-expand features)
 
-(define-syntax supported-features
-  '(r7rs racket exact-closed exact-complex ieee-float full-unicode ratios))
+(define-for-syntax supported-features
+  (append '(r7rs racket exact-closed exact-complex ieee-float full-unicode ratios)
+          (list (system-type 'os))))
 
-(define-syntax (define-features-list stx)
+(define-syntax (features-list stx)
   (syntax-parse stx
-    [(_ features:id)
-     (with-syntax ([(supported-feature ...) (syntax-local-value #'supported-features)])
-       #'(define (features)
-           (6:list 'supported-feature ...)))]))
+    [(_) #`(6:quote #,supported-features)]))
 
-(define-features-list features)
+(define (features) (features-list))
 
 (begin-for-syntax
   (define (module-exists? path)
@@ -41,8 +39,7 @@
     (pattern 6:else
              #:attr true? #t)
     (pattern feature:id
-             #:attr true? (member (syntax->datum #'feature)
-                                  (syntax-local-value #'supported-features)))))
+             #:attr true? (member (syntax->datum #'feature) supported-features))))
 
 (define-syntax cond-expand
   (syntax-parser
