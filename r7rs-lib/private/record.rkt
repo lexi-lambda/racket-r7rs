@@ -80,9 +80,9 @@
                            (make-struct-type 'name #f #,(length (current-record-fields))
                                              0 #f '() #f #f '() #f 'constructor.name)])
                (values struct:record make-record record-pred?
-                       (make-struct-field-accessor record-ref field-index 'field-accessors)
+                       (procedure-rename (make-struct-field-accessor record-ref field-index 'name) 'field-accessors)
                        ...
-                       (make-struct-field-mutator record-set! field-modifier-index 'field-modifiers)
+                       (procedure-rename (make-struct-field-mutator record-set! field-modifier-index 'name) 'field-modifiers)
                        ...)))
            ; wrap the struct constructor with a custom proc that handles missing fields
            (define (constructor.name constructor.field ...)
