@@ -2,6 +2,8 @@
 
 (define collection "r7rs")
 
+(define blurb "Implementation of R7RS-small, providing #lang r7rs")
+
 (define version "1.1")
 
 (define deps
